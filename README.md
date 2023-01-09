@@ -1,8 +1,11 @@
 # tf-module-acm
 
+## ChangeLog
+
+### v1.0.0
+Initial Version capable of generating ACM certificate for a domain hosted in r53
 
 ## Example Usage
-
 
 Module Definition
 
