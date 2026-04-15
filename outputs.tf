@@ -4,7 +4,7 @@ output "acm_certificate_arn" {
     for domain, zone_id in local.domain_names :
     zone_id != ""
     ? aws_acm_certificate_validation.cert[domain].certificate_arn
-    : aws_acm_certificate.cert[domain].arn
+    : aws_acm_certificate.cf_alias[domain].arn
   ]) : null
 }
 
@@ -14,7 +14,7 @@ output "acm_certificate_arns" {
     for domain, zone_id in local.domain_names : domain => (
       zone_id != ""
       ? aws_acm_certificate_validation.cert[domain].certificate_arn
-      : aws_acm_certificate.cert[domain].arn
+      : aws_acm_certificate.cf_alias[domain].arn
     )
   }
 }
