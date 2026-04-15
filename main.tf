@@ -41,6 +41,8 @@ resource "aws_acm_certificate_validation" "cert" {
 
   certificate_arn         = aws_acm_certificate.cf_alias[0].arn
   validation_record_fqdns = [aws_route53_record.cert_validation[0].fqdn]
+
+  depends_on = [aws_route53_record.cert_validation]
 }
 
 # -----------------------------------------------------------------------------
