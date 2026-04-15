@@ -78,6 +78,8 @@ resource "aws_acm_certificate_validation" "cert_for_each" {
 
   certificate_arn         = aws_acm_certificate.cert[each.key].arn
   validation_record_fqdns = [aws_route53_record.cert_validation_for_each[each.key].fqdn]
+
+  depends_on = [aws_route53_record.cert_validation_for_each]
 }
 
 # State migration from original module: unindexed resources -> [0]
