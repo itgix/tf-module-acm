@@ -1,3 +1,10 @@
-output "acm_certificate_arn" {
-  value = aws_acm_certificate_validation.cert.certificate_arn
+output "acm_certificate_arns" {
+  description = "Map of primary domain name to ACM certificate ARN. Issued when Route53 validation ran in Terraform; otherwise the pending certificate ARN until you validate DNS elsewhere."
+  value = {
+    for domain, zone_id in var.domain_names : domain => (
+      zone_id != ""
+      ? aws_acm_certificate_validation.cert[domain].certificate_arn
+      : aws_acm_certificate.cert[domain].arn
+    )
+  }
 }
