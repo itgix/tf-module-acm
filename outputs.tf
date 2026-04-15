@@ -2,8 +2,8 @@ output "acm_certificate_arn" {
   description = "When a single apex is configured: ARN of the wildcard *.<apex> cert. Null when multiple certs use domain_names."
   value = local.use_legacy_singleton ? (
     var.r53_zone_id != ""
-    ? aws_acm_certificate_validation.cert[0].certificate_arn
-    : aws_acm_certificate.cf_alias[0].arn
+    ? aws_acm_certificate_validation.cert.certificate_arn
+    : aws_acm_certificate.cf_alias.arn
     ) : (
     length(var.domain_names) == 1 ? one([
       for domain, zone_id in var.domain_names :
@@ -19,8 +19,8 @@ output "acm_certificate_arns" {
   value = local.use_legacy_singleton ? {
     (var.domain_name) = (
       var.r53_zone_id != ""
-      ? aws_acm_certificate_validation.cert[0].certificate_arn
-      : aws_acm_certificate.cf_alias[0].arn
+      ? aws_acm_certificate_validation.cert.certificate_arn
+      : aws_acm_certificate.cf_alias.arn
     )
     } : {
     for domain, zone_id in local.domain_names : domain => (

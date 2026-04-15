@@ -79,17 +79,17 @@ resource "aws_acm_certificate_validation" "cert_for_each" {
 }
 
 # State migration from original module: unindexed resources -> [0]
-moved {
-  from = aws_acm_certificate.cf_alias
-  to   = aws_acm_certificate.cf_alias[0]
-}
+# moved {
+#   from = aws_acm_certificate.cf_alias
+#   to   = aws_acm_certificate.cf_alias[0]
+# }
 
-moved {
-  from = aws_route53_record.cert_validation
-  to   = aws_route53_record.cert_validation[0]
-}
+# moved {
+#   from = aws_route53_record.cert_validation
+#   to   = aws_route53_record.cert_validation[0]
+# }
 
-moved {
-  from = aws_acm_certificate_validation.cert
-  to   = aws_acm_certificate_validation.cert[0]
-}
+# moved {
+#   from = aws_acm_certificate_validation.cert
+#   to   = aws_acm_certificate_validation.cert[0]
+# }
