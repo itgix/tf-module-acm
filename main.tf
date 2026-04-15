@@ -5,7 +5,7 @@ locals {
   }
 }
 
-resource "aws_acm_certificate" "cert" {
+resource "aws_acm_certificate" "cf_alias" {
   for_each = local.domain_names
 
   # Only wildcard certificates: *.<apex> (apex is each.key / var.domain_name).
