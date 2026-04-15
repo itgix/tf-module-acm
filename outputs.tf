@@ -1,5 +1,5 @@
 output "acm_certificate_arn" {
-  description = "Legacy: ARN of the single certificate when exactly one domain is configured. Null when multiple certificates are defined."
+  description = "When exactly one apex is configured: ARN of the wildcard *.<apex> certificate. Null when multiple certificates are defined."
   value = length(local.domain_names) == 1 ? one([
     for domain, zone_id in local.domain_names :
     zone_id != ""
@@ -9,7 +9,7 @@ output "acm_certificate_arn" {
 }
 
 output "acm_certificate_arns" {
-  description = "Map of primary domain name to ACM certificate ARN. Issued when Route53 validation ran in Terraform; otherwise the pending certificate ARN until you validate DNS elsewhere."
+  description = "Map of apex zone name (map key / domain_name) to ACM certificate ARN. Certificates are always *.<apex>. Issued when Route53 validation ran in Terraform; otherwise the pending certificate ARN until you validate DNS elsewhere."
   value = {
     for domain, zone_id in local.domain_names : domain => (
       zone_id != ""

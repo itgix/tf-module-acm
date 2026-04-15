@@ -1,5 +1,5 @@
 locals {
-  # Prefer explicit map; otherwise legacy single domain + zone.
+  # Map keys are apex zone names; ACM primary name is always *.<key>.
   domain_names = length(var.domain_names) > 0 ? var.domain_names : {
     (var.domain_name) = var.r53_zone_id
   }
@@ -8,7 +8,8 @@ locals {
 resource "aws_acm_certificate" "cert" {
   for_each = local.domain_names
 
-  domain_name       = each.key
+  # Only wildcard certificates: *.<apex> (apex is each.key / var.domain_name).
+  domain_name       = "*.${each.key}"
   validation_method = "DNS"
 
   lifecycle {
