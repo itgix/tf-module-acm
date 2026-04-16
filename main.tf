@@ -12,7 +12,7 @@ locals {
 # ---------------------------
 
 resource "aws_acm_certificate" "cf_alias" {
-  domain_name       = "*.${var.domain_name}"
+  domain_name       = "${var.domain_name}"
   validation_method = "DNS"
 
   lifecycle {
@@ -73,20 +73,4 @@ resource "aws_acm_certificate_validation" "cert_for_each" {
   validation_record_fqdns = [aws_route53_record.cert_validation_for_each[each.key].fqdn]
 
   depends_on = [aws_route53_record.cert_validation_for_each]
-}
-
-# Upgrade from older module versions that used count = 1 / [0]
-moved {
-  from = aws_acm_certificate.cf_alias[0]
-  to   = aws_acm_certificate.cf_alias
-}
-
-moved {
-  from = aws_route53_record.cert_validation[0]
-  to   = aws_route53_record.cert_validation
-}
-
-moved {
-  from = aws_acm_certificate_validation.cert[0]
-  to   = aws_acm_certificate_validation.cert
 }
