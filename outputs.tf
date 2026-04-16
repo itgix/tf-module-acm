@@ -18,7 +18,7 @@ output "acm_certificate_arns" {
       )
     },
     {
-      for domain, zone_id in local.wildcard_for_each : domain => (
+      for domain, zone_id in local.additional_certs : domain => (
         zone_id != ""
         ? aws_acm_certificate_validation.cert_for_each[domain].certificate_arn
         : aws_acm_certificate.cert[domain].arn
