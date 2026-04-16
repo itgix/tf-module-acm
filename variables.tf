@@ -17,5 +17,5 @@ variable "r53_zone_id" {
 variable "domain_names" {
   type        = map(string)
   default     = {}
-  description = "Optional additional apex zone name => Route53 zone ID for extra certs issued as *.<apex>. Keys equal to domain_name are ignored."
+  description = "Optional additional domain name => Route53 zone ID for extra certs. Keys equal to domain_name are ignored."
 }

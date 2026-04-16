@@ -1,10 +1,10 @@
 locals {
-  # Additional apex => zone (never includes primary domain_name).
-  wildcard_for_each = {
+  # Additional domain => zone (never includes primary domain_name).
+  additional_certs = {
     for k, v in var.domain_names : k => v if k != var.domain_name
   }
 
-  cert_count = 1 + length(local.wildcard_for_each)
+  cert_count = 1 + length(local.additional_certs)
 }
 
 # ---------------------------
@@ -39,13 +39,13 @@ resource "aws_acm_certificate_validation" "cert" {
 }
 
 # -----------------------------------------------------------------------------
-# Optional additional wildcard certs (*.<apex> per map key).
+# Optional additional certs (per domain_names map key).
 # -----------------------------------------------------------------------------
 
 resource "aws_acm_certificate" "cert" {
-  for_each = local.wildcard_for_each
+  for_each = local.additional_certs
 
-  domain_name       = "*.${each.key}"
+  domain_name       = each.key
   validation_method = "DNS"
 
   lifecycle {
@@ -54,7 +54,7 @@ resource "aws_acm_certificate" "cert" {
 }
 
 resource "aws_route53_record" "cert_validation_for_each" {
-  for_each = { for domain, zone_id in local.wildcard_for_each : domain => zone_id if zone_id != "" }
+  for_each = { for domain, zone_id in local.additional_certs : domain => zone_id if zone_id != "" }
 
   allow_overwrite = true
   name            = tolist(aws_acm_certificate.cert[each.key].domain_validation_options)[0].resource_record_name
@@ -67,7 +67,7 @@ resource "aws_route53_record" "cert_validation_for_each" {
 }
 
 resource "aws_acm_certificate_validation" "cert_for_each" {
-  for_each = { for domain, zone_id in local.wildcard_for_each : domain => zone_id if zone_id != "" }
+  for_each = { for domain, zone_id in local.additional_certs : domain => zone_id if zone_id != "" }
 
   certificate_arn         = aws_acm_certificate.cert[each.key].arn
   validation_record_fqdns = [aws_route53_record.cert_validation_for_each[each.key].fqdn]
