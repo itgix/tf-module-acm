@@ -1,7 +1,21 @@
 variable "domain_name" {
-  type = string
+  type        = string
+  description = "Primary ACM certificate domain_name (exact string for aws_acm_certificate, e.g. *.dev.example.com). Always required."
+
+  validation {
+    condition     = var.domain_name != ""
+    error_message = "domain_name must be non-empty."
+  }
 }
+
 variable "r53_zone_id" {
-  default = ""
-  description = "Route53 zone. If domain name is specified and a cert needs to be created"
+  type        = string
+  default     = ""
+  description = "Route53 hosted zone ID for DNS validation of the primary certificate."
+}
+
+variable "domain_names" {
+  type        = map(string)
+  default     = {}
+  description = "Optional additional domain name => Route53 zone ID for extra certs. Keys equal to domain_name are ignored."
 }
