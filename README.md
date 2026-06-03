@@ -6,7 +6,7 @@ Terraform module that issues **ACM certificates** for explicit domain names (no 
 
 - **Primary certificate** — Always created for `domain_name` (the exact string passed to `aws_acm_certificate`).
 - **Optional extra certificates** — `domain_names` is a map of `domain => route53_zone_id`. Each key gets its own cert for that **exact** domain (not `*.<domain>`). Keys equal to `domain_name` are ignored.
-- **Validation** — When `r53_zone_id` (primary) or a `domain_names` zone ID is non-empty, the module creates the validation record and waits on `aws_acm_certificate_validation`. If `r53_zone_id` is empty for the primary, the primary cert is created but not validated via this module; extra entries with an empty zone ID create certs without validation records in that map slot (see outputs).
+- **Validation** — When `create_route53_validation_records` is `true` (default) and a zone ID is provided (`r53_zone_id` for the primary, or a non-empty value in `domain_names`), the module creates the DNS validation record and waits on `aws_acm_certificate_validation`. Set `create_route53_validation_records = false` to skip Route 53 records and validation entirely (certificates are still created). An empty zone ID also skips validation for that certificate.
 
 ## Inputs (summary)
 
@@ -14,6 +14,7 @@ Terraform module that issues **ACM certificates** for explicit domain names (no 
 |------|-------------|
 | `domain_name` | Primary certificate SAN/domain (required, non-empty). |
 | `r53_zone_id` | Hosted zone ID for primary DNS validation (default `""`). |
+| `create_route53_validation_records` | Create Route 53 validation records and wait for ACM validation when zone IDs are set (default `true`). |
 | `domain_names` | Optional map of extra domain → zone ID for additional certs (default `{}`). |
 
 ## Outputs
@@ -33,6 +34,19 @@ module "acm" {
 
   domain_name = "api.example.com"
   r53_zone_id = "Z00955992K1ILTFSNJ91B"
+}
+```
+
+### Certificate only (no Route 53 validation)
+
+Use when DNS validation is managed outside this module (e.g. another DNS provider):
+
+```hcl
+module "acm" {
+  source = "git::ssh://git@gitlab.itgix.com/educatedguessteam/tf-modules/tf-module-acm.git?ref=main"
+
+  domain_name                           = "api.example.com"
+  create_route53_validation_records     = false
 }
 ```
 
@@ -84,7 +98,8 @@ acm_certificates = {
 
 ### Unreleased / recent
 
-- Primary and optional extra certs use **exact** `domain_name` / map keys (no `*.` prefix on extras).
+- Add `create_route53_validation_records` to optionally skip Route 53 DNS validation records and `aws_acm_certificate_validation`.
+- Primary validation now respects empty `r53_zone_id` (previously always created a Route 53 record).
 - Optional `domain_names` map for multiple certs; internal local renamed to `additional_certs`.
 - Primary validation resource depends on the Route 53 validation record for safer destroy ordering.
 - Outputs: `acm_certificate_arns` uses `additional_certs`; behaviour documented above.

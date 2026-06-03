@@ -14,6 +14,12 @@ variable "r53_zone_id" {
   description = "Route53 hosted zone ID for DNS validation of the primary certificate."
 }
 
+variable "create_route53_validation_records" {
+  type        = bool
+  default     = true
+  description = "When true and a Route53 zone ID is provided, create DNS validation records and wait for certificate validation. Set to false to issue certificates without managing Route53 validation in this module."
+}
+
 variable "domain_names" {
   type        = map(string)
   default     = {}
